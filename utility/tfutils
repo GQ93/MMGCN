@@ -1,0 +1,37 @@
+import tensorflow as tf
+from functools import reduce
+from operator import mul
+
+def get_num_params():
+    num_params = 0
+    for variable in tf.trainable_variables():
+        shape = variable.get_shape()
+        num_params += reduce(mul, [dim.value for dim in shape], 1)
+    return num_params
+
+def penalty(preds, L, n=1, sgn=False):
+    """"Penalty term"""
+    f = tf.reshape(preds, [1, -1])
+    f = tf.math.pow(f, n)
+    if sgn:
+        f = tf.multiply(tf.math.sign(f), f)
+
+    return tf.reduce_mean(tf.matmul(f, tf.matmul(L, tf.transpose(f))))
+
+
+def masked_sigmoid_cross_entropy_with_penalty(preds, labels, mask):
+    loss = tf.nn.sigmoid_cross_entropy_with_logits(logits=preds, labels=labels)
+    mask = tf.cast(mask, dtype=tf.float32)
+    mask /= tf.reduce_mean(mask)
+    loss *= mask
+    return tf.reduce_mean(loss)
+
+
+def masked_accuracy(preds, labels, mask):
+    """Accuracy with masking."""
+    correct_prediction = tf.equal(tf.math.round(preds), labels)
+    accuracy_all = tf.cast(correct_prediction, tf.float32)
+    mask = tf.cast(mask, dtype=tf.float32)
+    mask /= tf.reduce_mean(mask)
+    accuracy_all *= mask
+    return tf.reduce_mean(accuracy_all)

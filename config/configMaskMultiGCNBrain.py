@@ -1,0 +1,10 @@
+data_pth = r'C:\Users\lxiao1\Desktop\GangQu\Dataset\PNC\Raw\fmri\PNC_all'
+log_dir = r'C:\Users\lxiao1\Desktop\GangQu\muti_gcn\result\models'
+max_steps = 250
+scale1_of_penalty = 1e-4
+scale2_of_penalty = 1e-5
+scale_l1 = 0.05 # 0.01
+sparse_k = 10
+l_sizes = [128, 32]
+learning_rate = 1e-4
+mask_shape = [264, 264]
